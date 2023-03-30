@@ -25,9 +25,8 @@
 //
 
 #include "../../inc/MarlinConfigPre.h"
-#include "dgus_Tunes.h"
-using namespace Anycubic;
-#if BOTH(HAS_LCD_MENU, POWER_LOSS_RECOVERY)
+
+#if BOTH(HAS_MARLINUI_MENU, POWER_LOSS_RECOVERY)
 
 #include "menu_item.h"
 #include "../../gcode/queue.h"
@@ -35,9 +34,8 @@ using namespace Anycubic;
 #include "../../feature/powerloss.h"
 
 static void lcd_power_loss_recovery_resume() {
-  ui.start_flag=1;
   ui.return_to_status();
-  queue.inject_P(PSTR("M1000"));
+  queue.inject(F("M1000"));
 }
 
 void lcd_power_loss_recovery_cancel() {
@@ -47,11 +45,8 @@ void lcd_power_loss_recovery_cancel() {
 
 // TODO: Display long filename with Cancel/Resume buttons
 //       Requires supporting methods in PLR class.
-//
-
 void menu_job_recovery() {
-  
-  ui.defer_status_screen();  
+  ui.defer_status_screen();
   START_MENU();
   STATIC_ITEM(MSG_OUTAGE_RECOVERY);
   ACTION_ITEM(MSG_RESUME_PRINT, lcd_power_loss_recovery_resume);
@@ -59,4 +54,4 @@ void menu_job_recovery() {
   END_MENU();
 }
 
-#endif // HAS_LCD_MENU && POWER_LOSS_RECOVERY
+#endif // HAS_MARLINUI_MENU && POWER_LOSS_RECOVERY

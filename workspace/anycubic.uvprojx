@@ -2017,72 +2017,72 @@
             <File>
               <FileName>chiron_tft.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\chiron_tft.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\chiron_tft.cpp</FilePath>
             </File>
             <File>
               <FileName>chiron_tft.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\chiron_tft.h</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\chiron_tft.h</FilePath>
             </File>
             <File>
               <FileName>chiron_tft_defs.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\chiron_tft_defs.h</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\chiron_tft_defs.h</FilePath>
             </File>
             <File>
               <FileName>FileNavigator.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\FileNavigator.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\FileNavigator.cpp</FilePath>
             </File>
             <File>
               <FileName>FileNavigator.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\FileNavigator.h</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\FileNavigator.h</FilePath>
             </File>
             <File>
               <FileName>Tunes.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\Tunes.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\Tunes.cpp</FilePath>
             </File>
             <File>
               <FileName>Tunes.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\Tunes.h</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\Tunes.h</FilePath>
             </File>
             <File>
               <FileName>dgus_FileNavigator.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_dgus\dgus_FileNavigator.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_dgus\dgus_FileNavigator.cpp</FilePath>
             </File>
             <File>
               <FileName>dgus_FileNavigator.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_dgus\dgus_FileNavigator.h</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_dgus\dgus_FileNavigator.h</FilePath>
             </File>
             <File>
               <FileName>dgus_tft.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_dgus\dgus_tft.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_dgus\dgus_tft.cpp</FilePath>
             </File>
             <File>
               <FileName>dgus_tft.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_dgus\dgus_tft.h</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_dgus\dgus_tft.h</FilePath>
             </File>
             <File>
               <FileName>dgus_tft_defs.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_dgus\dgus_tft_defs.h</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_dgus\dgus_tft_defs.h</FilePath>
             </File>
             <File>
               <FileName>dgus_Tunes.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_dgus\dgus_Tunes.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_dgus\dgus_Tunes.cpp</FilePath>
             </File>
             <File>
               <FileName>dgus_Tunes.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_dgus\dgus_Tunes.h</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_dgus\dgus_Tunes.h</FilePath>
             </File>
             <File>
               <FileName>anycubic_chiron_lcd.cpp</FileName>

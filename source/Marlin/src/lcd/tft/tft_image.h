@@ -39,18 +39,17 @@ extern const uint8_t chamber_64x64x4[], chamber_heated_64x64x4[];
 extern const uint8_t fan0_64x64x4[], fan1_64x64x4[];
 extern const uint8_t fan_slow0_64x64x4[], fan_slow1_64x64x4[];
 extern const uint8_t fan_fast0_64x64x4[], fan_fast1_64x64x4[];
-//extern const uint8_t sd_64x64x4[];
+extern const uint8_t sd_64x64x4[];
 extern const uint8_t home_64x64x4[];
 extern const uint8_t btn_rounded_64x52x4[];
 extern const uint8_t btn_rounded_42x39x4[];
 extern const uint8_t menu_64x64x4[];
-//extern const uint8_t settings_64x64x4[];
-extern const uint8_t settings_32x32x1[];
+extern const uint8_t settings_64x64x4[];
 extern const uint8_t confirm_64x64x4[];
 extern const uint8_t cancel_64x64x4[];
 extern const uint8_t increase_64x64x4[];
 extern const uint8_t decrease_64x64x4[];
-//extern const uint8_t pause_64x64x4[];
+extern const uint8_t pause_64x64x4[];
 
 extern const uint8_t feedrate_32x32x4[];
 extern const uint8_t flowrate_32x32x4[];
@@ -64,9 +63,6 @@ extern const uint8_t refresh_32x32x4[];
 extern const uint8_t leveling_32x32x4[];
 
 extern const uint8_t slider_8x16x4[];
-extern const uint8_t STOP_48x48x1[];
-extern const uint8_t pause_48x48x1[];
-extern const uint8_t sd_48x48x1[];
 
 enum MarlinImage : uint8_t {
   imgBootScreen = 0x00,
@@ -101,8 +97,6 @@ enum MarlinImage : uint8_t {
   imgHome,
   imgBtn52Rounded,
   imgBtn39Rounded,
-  imgPause,
-  imgStop,
   imgCount,
   noImage = imgCount,
   imgPageUp = imgLeft,
@@ -120,7 +114,13 @@ enum colorMode_t : uint8_t {
 
 typedef colorMode_t ColorMode;
 
-typedef struct __attribute__((__packed__)) {
+#ifdef __AVR__
+  #define IMG_PACKED __attribute__((__packed__))
+#else
+  #define IMG_PACKED
+#endif
+
+typedef struct IMG_PACKED {
   void *data;
   uint16_t width;
   uint16_t height;
@@ -129,14 +129,14 @@ typedef struct __attribute__((__packed__)) {
 
 extern const tImage NoLogo;
 
-//#if ENABLED(SHOW_BOOTSCREEN)
-//  extern const tImage MarlinLogo112x38x1;
-//  extern const tImage MarlinLogo228x255x2;
-//  extern const tImage MarlinLogo228x255x4;
-//  extern const tImage MarlinLogo195x59x16;
-//  extern const tImage MarlinLogo320x240x16;
-//  extern const tImage MarlinLogo480x320x16;
-//#endif
+#if ENABLED(SHOW_BOOTSCREEN)
+  extern const tImage MarlinLogo112x38x1;
+  extern const tImage MarlinLogo228x255x2;
+  extern const tImage MarlinLogo228x255x4;
+  extern const tImage MarlinLogo195x59x16;
+  extern const tImage MarlinLogo320x240x16;
+  extern const tImage MarlinLogo480x320x16;
+#endif
 extern const tImage Background320x30x16;
 
 extern const tImage HotEnd_64x64x4;
@@ -150,8 +150,7 @@ extern const tImage Fan_Slow0_64x64x4;
 extern const tImage Fan_Slow1_64x64x4;
 extern const tImage Fan_Fast0_64x64x4;
 extern const tImage Fan_Fast1_64x64x4;
-extern const tImage SD_48x48x1;
-//extern const tImage SD_64x64x4;
+extern const tImage SD_64x64x4;
 extern const tImage Home_64x64x4;
 extern const tImage BtnRounded_64x52x4;
 extern const tImage BtnRounded_42x39x4;
@@ -161,9 +160,8 @@ extern const tImage Confirm_64x64x4;
 extern const tImage Cancel_64x64x4;
 extern const tImage Increase_64x64x4;
 extern const tImage Decrease_64x64x4;
-//extern const tImage Pause_64x64x4;
-extern const tImage Pause_48x48x1;
-extern const tImage Stop_48x48x1;
+extern const tImage Pause_64x64x4;
+
 extern const tImage Feedrate_32x32x4;
 extern const tImage Flowrate_32x32x4;
 extern const tImage Directory_32x32x4;

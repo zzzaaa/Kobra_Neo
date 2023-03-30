@@ -52,8 +52,6 @@
   // Motion > Level Bed handlers
   //
 
-  static uint8_t manual_probe_index;
-
   // LCD probed points are from defaults
   constexpr uint8_t total_probe_points = TERN(AUTO_BED_LEVELING_3POINT, 3, GRID_MAX_POINTS);
 
@@ -73,12 +71,12 @@
       #if Z_AFTER_PROBING > 0 && DISABLED(MESH_BED_LEVELING)
         // Display "Done" screen and wait for moves to complete
         line_to_z(Z_AFTER_PROBING);
-        ui.synchronize(GET_TEXT(MSG_LEVEL_BED_DONE));
+        ui.synchronize(GET_TEXT_F(MSG_LEVEL_BED_DONE));
       #endif
       ui.goto_previous_screen_no_defer();
       ui.completion_feedback();
     }
-    if (ui.should_draw()) MenuItem_static::draw(LCD_HEIGHT >= 4, GET_TEXT(MSG_LEVEL_BED_DONE));
+    if (ui.should_draw()) MenuItem_static::draw(LCD_HEIGHT >= 4, GET_TEXT_F(MSG_LEVEL_BED_DONE));
     ui.refresh(LCDVIEW_CALL_REDRAW_NEXT);
   }
 
@@ -103,9 +101,9 @@
         ui.wait_for_move = true;
         ui.goto_screen(_lcd_level_bed_done);
         #if ENABLED(MESH_BED_LEVELING)
-          queue.inject_P(PSTR("G29S2"));
+          queue.inject(F("G29S2"));
         #elif ENABLED(PROBE_MANUALLY)
-          queue.inject_P(PSTR("G29V1"));
+          queue.inject(F("G29V1"));
         #endif
       }
       else
@@ -129,7 +127,7 @@
     //
     if (ui.should_draw()) {
       const float v = current_position.z;
-      MenuEditItemBase::draw_edit_screen(GET_TEXT(MSG_MOVE_Z), ftostr43sign(v + (v < 0 ? -0.0001f : 0.0001f), '+'));
+      MenuEditItemBase::draw_edit_screen(GET_TEXT_F(MSG_MOVE_Z), ftostr43sign(v + (v < 0 ? -0.0001f : 0.0001f), '+'));
     }
   }
 
@@ -140,7 +138,7 @@
     if (ui.should_draw()) {
       char msg[10];
       sprintf_P(msg, PSTR("%i / %u"), int(manual_probe_index + 1), total_probe_points);
-      MenuEditItemBase::draw_edit_screen(GET_TEXT(MSG_LEVEL_BED_NEXT_POINT), msg);
+      MenuEditItemBase::draw_edit_screen(GET_TEXT_F(MSG_LEVEL_BED_NEXT_POINT), msg);
     }
     ui.refresh(LCDVIEW_CALL_NO_REDRAW);
     if (!ui.wait_for_move) ui.goto_screen(_lcd_level_bed_get_z);
@@ -155,9 +153,9 @@
     // G29 Records Z, moves, and signals when it pauses
     ui.wait_for_move = true;
     #if ENABLED(MESH_BED_LEVELING)
-      queue.inject_P(manual_probe_index ? PSTR("G29S2") : PSTR("G29S1"));
+      queue.inject(manual_probe_index ? F("G29S2") : F("G29S1"));
     #elif ENABLED(PROBE_MANUALLY)
-      queue.inject_P(PSTR("G29V1"));
+      queue.inject(F("G29V1"));
     #endif
   }
 
@@ -167,7 +165,7 @@
   //
   void _lcd_level_bed_homing_done() {
     if (ui.should_draw()) {
-      MenuItem_static::draw(1, GET_TEXT(MSG_LEVEL_BED_WAITING));
+      MenuItem_static::draw(1, GET_TEXT_F(MSG_LEVEL_BED_WAITING));
       // Color UI needs a control to detect a touch
       #if BOTH(TOUCH_SCREEN, HAS_GRAPHICAL_TFT)
         touch.add_control(CLICK, 0, 0, TFT_WIDTH, TFT_HEIGHT);
@@ -216,111 +214,12 @@
     BACK_ITEM(MSG_BED_LEVELING);
     EDIT_ITEM(uint8, MSG_MESH_X, &xind, 0, (GRID_MAX_POINTS_X) - 1);
     EDIT_ITEM(uint8, MSG_MESH_Y, &yind, 0, (GRID_MAX_POINTS_Y) - 1);
-    EDIT_ITEM_FAST(float43, MSG_MESH_EDIT_Z, &Z_VALUES(xind, yind), -(LCD_PROBE_Z_RANGE) * 0.5, (LCD_PROBE_Z_RANGE) * 0.5, refresh_planner);
+    EDIT_ITEM_FAST(float43, MSG_MESH_EDIT_Z, &bedlevel.z_values[xind][yind], -(LCD_PROBE_Z_RANGE) * 0.5, (LCD_PROBE_Z_RANGE) * 0.5, refresh_planner);
     END_MENU();
   }
 
 #endif // MESH_EDIT_MENU
 
-void report_leveing_status(int8_t        state)
-{
-		ui.return_to_status();
-		if(state != -1) {
-
-		}
-		else
-		{
-		
-		}
-}
-
-void leveing_probeing()
-{
-   int16_t hotend_currentTemperature =  thermalManager.temp_hotend[0].celsius;
-   //int16_t hotend_targetTemperature =   thermalManager.temp_hotend[0].target;
-   int16_t bed_currenttTemperature =   thermalManager.temp_bed.celsius;
-   //int16_t bed_targetTemperature =   thermalManager.temp_bed.target;
-	 
-	 //ui.defer_status_screen();
-	 
-	if(ui.should_draw())
-	{
-		if(ui.preheating_start == false && ui.preheating_stop == false)
-		{
-			tft.canvas(0, 100, TFT_WIDTH, 30);
-			tft.set_background(COLOR_BACKGROUND);
-			tft_string.set(GET_TEXT(MSG_LEVEING_HOME));
-			tft_string.trim();
-			tft.add_text(tft_string.center(TFT_WIDTH),5,COLOR_YELLOW,tft_string);
-		}
-		else if(ui.preheating_start == true && ui.preheating_stop == false)
-		{
-//			tft.canvas(0, 60, TFT_WIDTH, 30);
-//			tft.set_background(COLOR_BACKGROUND);
-//			tft_string.set(GET_TEXT(MSG_WAIT_LEVELING_HEAT));
-//			tft_string.trim();
-//			tft.add_text(tft_string.center(TFT_WIDTH),5,COLOR_YELLOW,tft_string);
-//		
-//			tft.canvas(110, 100, 160, 30);
-//			tft.set_background(COLOR_BACKGROUND); 
-//			tft.add_text(0,0,COLOR_YELLOW, "E :");
-//			tft.add_text(30,0,COLOR_YELLOW, i16tostr3rj(hotend_currentTemperature));
-//			tft.add_text(70,0,COLOR_YELLOW, "/"); 
-//			tft.add_text(80,0,COLOR_YELLOW, i16tostr3rj(LEVELING_NOZZLE_TEMP));
-
-//			tft.canvas(110, 140, 160, 30);
-//			tft.set_background(COLOR_BACKGROUND); 
-//			tft.add_text(0,0,COLOR_YELLOW, "B :");				
-//			tft.add_text(30,0,COLOR_YELLOW, i16tostr3rj(bed_currenttTemperature));
-//			tft.add_text(70,0,COLOR_YELLOW, "/"); 
-//			tft.add_text(80,0,COLOR_YELLOW, i16tostr3rj(LEVELING_BED_TEMP));
-			tft.canvas(0, 60, TFT_WIDTH, 30);
-			tft.set_background(COLOR_BACKGROUND);
-			tft_string.set(GET_TEXT(MSG_WAIT_LEVELING_HEAT));
-			tft_string.trim();
-			tft.add_text(tft_string.center(TFT_WIDTH),5,COLOR_YELLOW,tft_string);
-		
-			tft.canvas(110, 100, 160, 30);
-			tft.set_background(COLOR_BACKGROUND); 
-			tft.add_text(0,0,COLOR_YELLOW, "E :");				
-			tft.add_text(30,0,COLOR_YELLOW, i16tostr3rj(hotend_currentTemperature));
-			tft.add_text(70,0,COLOR_YELLOW, "/"); 
-			tft.add_text(80,0,COLOR_YELLOW, i16tostr3rj(LEVELING_NOZZLE_TEMP));
-
-			tft.canvas(110, 140, 160, 30);
-			tft.set_background(COLOR_BACKGROUND); 
-			tft.add_text(0,0,COLOR_YELLOW, "B :");				
-			tft.add_text(30,0,COLOR_YELLOW, i16tostr3rj(bed_currenttTemperature));
-			tft.add_text(70,0,COLOR_YELLOW, "/"); 
-			tft.add_text(80,0,COLOR_YELLOW, i16tostr3rj(LEVELING_BED_TEMP));
-			
-		}
-		else if(ui.preheating_start == false && ui.preheating_stop == true)
-		{
-
-			//tft.canvas(0, 0, TFT_WIDTH, TFT_HEIGHT);
-			tft.canvas(0, 55, TFT_WIDTH, 110);
-			tft.set_background(COLOR_BACKGROUND);
-			tft_string.set(GET_TEXT(MSG_LEVEL_POP_UP));
-			tft_string.trim();
-			//tft.add_text(tft_string.center(TFT_WIDTH),110,COLOR_YELLOW,tft_string);
-			tft.add_text(tft_string.center(TFT_WIDTH),55,COLOR_YELLOW,tft_string);
-		}
-
-	}
-
-	ui.refresh(LCDVIEW_CALL_REDRAW_NEXT);
-}
-
-
-void begin_bed_lever()
-{
-		ui.is_leveing = true; // The status page is not returned when remove sd card
-    queue.inject_P(PSTR("M851 Z0\nG28\nG29"));
-   	//ui.return_to_status();
-   	ui.goto_screen(leveing_probeing);
-   	
-}
 /**
  * Step 1: Bed Level entry-point
  *
@@ -331,7 +230,7 @@ void begin_bed_lever()
  *    Mesh Z Offset: ---  (Req: MESH_BED_LEVELING)
  *    Z Probe Offset: --- (Req: HAS_BED_PROBE, Opt: BABYSTEP_ZPROBE_OFFSET)
  *    Level Bed >
- *    Level Corners >     (if homed)
+ *    Bed Tramming >      (if homed)
  *    Load Settings       (Req: EEPROM_SETTINGS)
  *    Save Settings       (Req: EEPROM_SETTINGS)
  */
@@ -340,42 +239,38 @@ void menu_bed_leveling() {
              is_valid = leveling_is_valid();
 
   START_MENU();
-  BACK_ITEM(MSG_BACK);
+  BACK_ITEM(MSG_MOTION);
 
   // Auto Home if not using manual probing
-//  #if NONE(PROBE_MANUALLY, MESH_BED_LEVELING)
-//    if (!is_homed) GCODES_ITEM(MSG_AUTO_HOME, G28_STR);
-//  #endif
+  #if NONE(PROBE_MANUALLY, MESH_BED_LEVELING)
+    if (!is_homed) GCODES_ITEM(MSG_AUTO_HOME, FPSTR(G28_STR));
+  #endif
 
   // Level Bed
-//  #if EITHER(PROBE_MANUALLY, MESH_BED_LEVELING)
-//    // Manual leveling uses a guided procedure
-//    SUBMENU(MSG_LEVEL_BED, _lcd_level_bed_continue);
-//  #else
-//    // Automatic leveling can just run the G-code    injectCommands_P(PSTR("M851 Z0\nG28\nG29"));
-//    GCODES_ITEM(MSG_LEVEL_BED, is_homed ? PSTR("G29") : PSTR("G29N"));
-
-//  #endif
-//  GCODES_ITEM(MSG_LEVEL_BED, is_homed ? PSTR("M851 Z0\nG29") : PSTR("M851 Z0\nG29N"));
-     SUBMENU(MSG_LEVEL_BED, begin_bed_lever);
-     //GCODES_ITEM(MSG_LEVEL_BED, PSTR("M851 Z0\nG28\nG29\n M500"));
+  #if EITHER(PROBE_MANUALLY, MESH_BED_LEVELING)
+    // Manual leveling uses a guided procedure
+    SUBMENU(MSG_LEVEL_BED, _lcd_level_bed_continue);
+  #else
+    // Automatic leveling can just run the G-code
+    GCODES_ITEM(MSG_LEVEL_BED, is_homed ? F("G29") : F("G29N"));
+  #endif
 
   #if ENABLED(MESH_EDIT_MENU)
     if (is_valid) SUBMENU(MSG_EDIT_MESH, menu_edit_mesh);
   #endif
 
   // Homed and leveling is valid? Then leveling can be toggled.
-//  if (is_homed && is_valid) {
-//    bool show_state = planner.leveling_active;
-//    EDIT_ITEM(bool, MSG_BED_LEVELING, &show_state, _lcd_toggle_bed_leveling);
-//  }
+  if (is_homed && is_valid) {
+    bool show_state = planner.leveling_active;
+    EDIT_ITEM(bool, MSG_BED_LEVELING, &show_state, _lcd_toggle_bed_leveling);
+  }
 
-//  // Z Fade Height
-//  #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
-//    // Shadow for editing the fade height
-//    editable.decimal = planner.z_fade_height;
-//    EDIT_ITEM_FAST(float3, MSG_Z_FADE_HEIGHT, &editable.decimal, 0, 100, []{ set_z_fade_height(editable.decimal); });
-//  #endif
+  // Z Fade Height
+  #if ENABLED(ENABLE_LEVELING_FADE_HEIGHT)
+    // Shadow for editing the fade height
+    editable.decimal = planner.z_fade_height;
+    EDIT_ITEM_FAST(float3, MSG_Z_FADE_HEIGHT, &editable.decimal, 0, 100, []{ set_z_fade_height(editable.decimal); });
+  #endif
 
   //
   // Mesh Bed Leveling Z-Offset
@@ -386,25 +281,22 @@ void menu_bed_leveling() {
     #else
       #define LCD_Z_OFFSET_TYPE float42_52 // Values from -99.99 to 99.99
     #endif
-    EDIT_ITEM(LCD_Z_OFFSET_TYPE, MSG_BED_Z, &mbl.z_offset, Z_PROBE_OFFSET_RANGE_MIN, Z_PROBE_OFFSET_RANGE_MAX);
+    EDIT_ITEM(LCD_Z_OFFSET_TYPE, MSG_BED_Z, &bedlevel.z_offset, Z_PROBE_OFFSET_RANGE_MIN, Z_PROBE_OFFSET_RANGE_MAX);
   #endif
 
   #if ENABLED(BABYSTEP_ZPROBE_OFFSET)
     SUBMENU(MSG_ZPROBE_ZOFFSET, lcd_babystep_zoffset);
   #elif HAS_BED_PROBE
     EDIT_ITEM(LCD_Z_OFFSET_TYPE, MSG_ZPROBE_ZOFFSET, &probe.offset.z, Z_PROBE_OFFSET_RANGE_MIN, Z_PROBE_OFFSET_RANGE_MAX);
-  //  EDIT_ITEM_FAST(float42_52,   MSG_ZPROBE_ZOFFSET, &probe.offset.z, Z_PROBE_OFFSET_RANGE_MIN, Z_PROBE_OFFSET_RANGE_MAX, []{ Save_probe_Z_offset(); });
   #endif
 
-  #if ENABLED(LEVEL_BED_CORNERS)
+  #if ENABLED(LCD_BED_TRAMMING)
     SUBMENU(MSG_BED_TRAMMING, _lcd_level_bed_corners);
   #endif
-  
-  //SUBMENU(MSG_CANCEL_LEVEING, cancel_leveing);
 
   #if ENABLED(EEPROM_SETTINGS)
-    //ACTION_ITEM(MSG_LOAD_EEPROM, ui.load_settings);
-    //ACTION_ITEM(MSG_STORE_EEPROM, ui.store_settings);
+    ACTION_ITEM(MSG_LOAD_EEPROM, ui.load_settings);
+    ACTION_ITEM(MSG_STORE_EEPROM, ui.store_settings);
   #endif
   END_MENU();
 }

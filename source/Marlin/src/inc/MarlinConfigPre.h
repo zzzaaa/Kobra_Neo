@@ -20,7 +20,7 @@
  *
  */
 #pragma once
-#pragma pack(4)
+
 #ifndef __MARLIN_FIRMWARE__
 #define __MARLIN_FIRMWARE__
 #endif
@@ -29,7 +29,6 @@
 // Prefix header to acquire configurations
 //
 #include <stdint.h>
-#include "../board/startup.h"
 
 #ifndef __MARLIN_DEPS__
   #include "../HAL/platforms.h"
