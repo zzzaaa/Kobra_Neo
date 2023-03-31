@@ -26,7 +26,7 @@
  */
 
 #include "../inc/MarlinConfig.h"
-#include "HS_servo.h"
+#include "../HAL/shared/servo.h"
 
 #if HAS_SERVO_ANGLES
 
@@ -52,7 +52,7 @@
 
   #ifdef Z_PROBE_SERVO_NR
     #if ENABLED(BLTOUCH)
-      #include "bltouch.h"
+      #include "../feature/bltouch.h"
       #undef Z_SERVO_ANGLES
       #define Z_SERVO_ANGLES { BLTOUCH_DEPLOY, BLTOUCH_STOW }
     #endif
@@ -103,37 +103,11 @@
   };
 
   #if HAS_Z_SERVO_PROBE
-    #define DEPLOY_Z_SERVO() MOVE_SERVO(Z_PROBE_SERVO_NR, servo_angles[Z_PROBE_SERVO_NR][0])
-    #define STOW_Z_SERVO() MOVE_SERVO(Z_PROBE_SERVO_NR, servo_angles[Z_PROBE_SERVO_NR][1])
+    #define DEPLOY_Z_SERVO() servo[Z_PROBE_SERVO_NR].move(servo_angles[Z_PROBE_SERVO_NR][0])
+    #define STOW_Z_SERVO() servo[Z_PROBE_SERVO_NR].move(servo_angles[Z_PROBE_SERVO_NR][1])
   #endif
 
-
-#define Servo_VERSION           2     // software version of this library
-
-  class Servo {
-    public:
-      Servo();
-      int8_t attach(const int pin);      // attach the given pin to the next free channel, set pinMode, return channel number (-1 on fail)
-      int8_t attach(const int pin, const int min, const int max); // as above but also sets min and max values for writes.
-      void detach();
-      void write(int value);             // if value is < 200 it is treated as an angle, otherwise as pulse width in microseconds
-      void writeMicroseconds(int value); // write pulse width in microseconds
-      void move(const int value);        // attach the servo, then move to value
-                                         // if value is < 200 it is treated as an angle, otherwise as pulse width in microseconds
-                                         // if DEACTIVATE_SERVOS_AFTER_MOVE wait SERVO_DELAY, then detach
-      int read();                        // returns current pulse width as an angle between 0 and 180 degrees
-      int readMicroseconds();            // returns current pulse width in microseconds for this servo (was read_us() in first release)
-      bool attached();                   // return true if this servo is attached, otherwise false
-
-    private:
-      uint8_t servoIndex;               // index into the channel data for this servo
-      int8_t min;                       // minimum is this value times 4 added to MIN_PULSE_WIDTH
-      int8_t max;                       // maximum is this value times 4 added to MAX_PULSE_WIDTH
-  };
 #endif // HAS_SERVO_ANGLES
 
-#define MOVE_SERVO(I, P) servo[I].move(P)
-#define DETACH_SERVO(I) servo[I].detach()
-
-extern HAL_SERVO_LIB servo[NUM_SERVOS];
+extern hal_servo_t servo[NUM_SERVOS];
 void servo_init();

@@ -23,8 +23,8 @@
 #include "../../../inc/MarlinConfigPre.h"
 
 #if HAS_GRAPHICAL_TFT
-#pragma pack(4)
-extern const uint8_t slider_8x16x4[64] __attribute((aligned (4)))= {
+
+extern const uint8_t slider_8x16x4[64] = {
   0x88, 0xFF, 0xFF, 0x88,
   0x8F, 0xFF, 0xFF, 0xF8,
   0x8F, 0xFF, 0xFF, 0xF8,

@@ -1,4 +1,26 @@
 /**
+ * Marlin 3D Printer Firmware
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ *
+ * Based on Sprinter and grbl.
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
+/**
  * @file    fontutils.cpp
  * @brief   help functions for font and char
  * @author  Yunhui Fu (yhfudev@gmail.com)
@@ -9,8 +31,6 @@
 
 #include "../inc/MarlinConfig.h"
 
-#define MAX_UTF8_CHAR_SIZE 3
-
 #if HAS_WIRED_LCD
   #include "marlinui.h"
   #include "../MarlinCore.h"
@@ -18,13 +38,8 @@
 
 #include "fontutils.h"
 
-uint8_t read_byte_ram(uint8_t * str) {
-  return *str;
-}
-
-uint8_t read_byte_rom(uint8_t * str) {
-  return pgm_read_byte(str);
-}
+uint8_t read_byte_ram(const uint8_t *str) { return *str; }
+uint8_t read_byte_rom(const uint8_t *str) { return pgm_read_byte(str); }
 
 /**
  * @brief Using binary search to find the position by data_pin
@@ -80,25 +95,12 @@ static inline bool utf8_is_start_byte_of_char(const uint8_t b) {
   return 0x80 != (b & 0xC0);
 }
 
-
-const uint16_t CN_num[99]={ 
-0x94AE, 0x8D25, 0x5931, 0x52A0, 0x8BF7, 0x91CD, 0x542F, 0x51C6, 0x5907, 0x4E8E, 
-0x82F1, 0x5361, 0x5DF2, 0x63D2, 0x5165, 0x62D4, 0x51FA, 0x8FD4, 0x5F52, 0x96F6,
-0x81EA, 0x52A8, 0x4E2D, 0x6587, 0x5173, 0x95ED, 0x5F02, 0x5E38, 0x7535, 0x673A,
-0x56DE, 0x539F, 0x70B9, 0x8BBE, 0x7F6E, 0x504F, 0x79FB, 0x4E3B, 0x9884, 0x70ED,
-0x7B49, 0x5F85, 0x5E8A, 0x964D, 0x6E29, 0x6253, 0x7387, 0x6D41, 0x62BD, 0x8F74,
-0x8C03, 0x5E73, 0x901F, 0x5EA6, 0x55B7, 0x5634, 0x98CE, 0x6247, 0x7EA7, 0x8fdb,
-0x9000, 0x6700, 0x5C0F, 0x5927, 0x91CF, 0x4e1D, 0x83DC, 0x8017, 0x6750, 0x5B8C,
-0x6210, 0x8F7D, 0x4FDD, 0x5B58, 0x6062, 0x590D, 0x5382, 0x66F4, 0x5355, 0x4FE1,
-0x606F, 0x754C, 0x9762, 0x68C0, 0x6682, 0x505C, 0x5370, 0x6536, 0x964D, 0x6B62,
-0x9AD8, 0x50A8, 0x65E0, 0x4F4E, 0x8BED, 0x8A00, 0x6362, 0x4E0B, 0x6309
-};
 /* This function gets the character at the pstart position, interpreting UTF8 multibyte sequences
    and returns the pointer to the next character */
-uint8_t* get_utf8_value_cb(uint8_t *pstart, read_byte_cb_t cb_read_byte, wchar_t *pval) {
+const uint8_t* get_utf8_value_cb(const uint8_t *pstart, read_byte_cb_t cb_read_byte, lchar_t &pval) {
   uint32_t val = 0;
-  uint8_t *p = pstart;
-  uint8_t i;
+  const uint8_t *p = pstart;
+
   #define NEXT_6_BITS() do{ val <<= 6; p++; valcur = cb_read_byte(p); val |= (valcur & 0x3F); }while(0)
 
   uint8_t valcur = cb_read_byte(p);
@@ -116,14 +118,6 @@ uint8_t* get_utf8_value_cb(uint8_t *pstart, read_byte_cb_t cb_read_byte, wchar_t
       val = valcur & 0x0F;
       NEXT_6_BITS();
       NEXT_6_BITS();
-      for(i=0;i<99;i++)
-      {
-        if(val==CN_num[i])
-        {
-           val=0x9d+i;
-           break;
-        }
-      }
       p++;
     }
   #endif
@@ -162,7 +156,7 @@ uint8_t* get_utf8_value_cb(uint8_t *pstart, read_byte_cb_t cb_read_byte, wchar_t
   else
     for (; 0xFC < (0xFE & valcur); ) { p++; valcur = cb_read_byte(p); }
 
-  if (pval) *pval = val;
+  pval = val;
 
   return p;
 }
@@ -170,7 +164,7 @@ uint8_t* get_utf8_value_cb(uint8_t *pstart, read_byte_cb_t cb_read_byte, wchar_t
 static inline uint8_t utf8_strlen_cb(const char *pstart, read_byte_cb_t cb_read_byte) {
   uint8_t cnt = 0;
   uint8_t *p = (uint8_t *)pstart;
-  for (;;) {
+  if (p) for (;;) {
     const uint8_t b = cb_read_byte(p);
     if (!b) break;
     if (utf8_is_start_byte_of_char(b)) cnt++;

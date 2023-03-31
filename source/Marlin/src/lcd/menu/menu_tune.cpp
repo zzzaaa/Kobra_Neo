@@ -26,10 +26,8 @@
 
 #include "../../inc/MarlinConfigPre.h"
 
-#if HAS_LCD_MENU
-#include "menu.h"
-#include "canvas.h"
-#include "probe.h"
+#if HAS_MARLINUI_MENU
+
 #include "menu_item.h"
 #include "../../module/motion.h"
 #include "../../module/planner.h"
@@ -52,7 +50,9 @@
     #include "../dogm/marlinui_DOGM.h"
   #endif
 
-  void _lcd_babystep(const AxisEnum axis, PGM_P const msg) {
+  // TODO: Replace fmsg with MSG_BABYSTEP_N and index substitution
+
+  void _lcd_babystep(const AxisEnum axis, FSTR_P const fmsg) {
     if (ui.use_click()) return ui.goto_previous_screen_no_defer();
     if (ui.encoderPosition) {
       const int16_t steps = int16_t(ui.encoderPosition) * (
@@ -67,21 +67,21 @@
       babystep.add_steps(axis, steps);
     }
     if (ui.should_draw()) {
-      const float mps = planner.steps_to_mm[axis];
-      MenuEditItemBase::draw_edit_screen(msg, BABYSTEP_TO_STR(mps * babystep.accum));
+      const float mps = planner.mm_per_step[axis];
+      MenuEditItemBase::draw_edit_screen(fmsg, BABYSTEP_TO_STR(mps * babystep.accum));
       #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
         const bool in_view = TERN1(HAS_MARLINUI_U8GLIB, PAGE_CONTAINS(LCD_PIXEL_HEIGHT - MENU_FONT_HEIGHT, LCD_PIXEL_HEIGHT - 1));
         if (in_view) {
           TERN_(HAS_MARLINUI_U8GLIB, ui.set_font(FONT_MENU));
           #if ENABLED(TFT_COLOR_UI)
             lcd_moveto(4, 3);
-            lcd_put_u8str_P(GET_TEXT(MSG_BABYSTEP_TOTAL));
-            lcd_put_wchar(':');
+            lcd_put_u8str(GET_TEXT_F(MSG_BABYSTEP_TOTAL));
+            lcd_put_u8str(F(":"));
             lcd_moveto(10, 3);
           #else
             lcd_moveto(0, TERN(HAS_MARLINUI_U8GLIB, LCD_PIXEL_HEIGHT - MENU_FONT_DESCENT, LCD_HEIGHT - 1));
-            lcd_put_u8str_P(GET_TEXT(MSG_BABYSTEP_TOTAL));
-            lcd_put_wchar(':');
+            lcd_put_u8str(GET_TEXT_F(MSG_BABYSTEP_TOTAL));
+            lcd_put_u8str(F(":"));
           #endif
           lcd_put_u8str(BABYSTEP_TO_STR(mps * babystep.axis_total[BS_TOTAL_IND(axis)]));
         }
@@ -96,12 +96,12 @@
   }
 
   #if ENABLED(BABYSTEP_XY)
-    void _lcd_babystep_x() { _lcd_babystep(X_AXIS, GET_TEXT(MSG_BABYSTEP_X)); }
-    void _lcd_babystep_y() { _lcd_babystep(Y_AXIS, GET_TEXT(MSG_BABYSTEP_Y)); }
+    void _lcd_babystep_x() { _lcd_babystep(X_AXIS, GET_TEXT_F(MSG_BABYSTEP_X)); }
+    void _lcd_babystep_y() { _lcd_babystep(Y_AXIS, GET_TEXT_F(MSG_BABYSTEP_Y)); }
   #endif
 
   #if DISABLED(BABYSTEP_ZPROBE_OFFSET)
-    void _lcd_babystep_z() { _lcd_babystep(Z_AXIS, GET_TEXT(MSG_BABYSTEP_Z)); }
+    void _lcd_babystep_z() { _lcd_babystep(Z_AXIS, GET_TEXT_F(MSG_BABYSTEP_Z)); }
     void lcd_babystep_z()  { _lcd_babystep_go(_lcd_babystep_z); }
   #endif
 
@@ -109,18 +109,18 @@
 
 void menu_tune() {
   START_MENU();
-  BACK_ITEM(MSG_BACK);
+  BACK_ITEM(MSG_MAIN);
 
   //
   // Speed:
   //
+  EDIT_ITEM(int3, MSG_SPEED, &feedrate_percentage, 10, 999);
 
-	EDIT_ITEM_FAST(int3, MSG_SPEED, &feedrate_percentage, 10, 300);
- 	//MenuItem_int3::action(MSG_SPEED, &feedrate_percentage, 10, 999);
+  //
   // Manual bed leveling, Bed Z:
   //
   #if BOTH(MESH_BED_LEVELING, LCD_BED_LEVELING)
-    EDIT_ITEM(float43, MSG_BED_Z, &mbl.z_offset, -1, 1);
+    EDIT_ITEM(float43, MSG_BED_Z, &bedlevel.z_offset, -1, 1);
   #endif
 
   //
@@ -198,11 +198,11 @@ void menu_tune() {
   // Flow:
   //
   #if HAS_EXTRUDERS
-    EDIT_ITEM(int3, MSG_FLOW, &planner.flow_percentage[active_extruder], 10, 300, []{ planner.refresh_e_factor(active_extruder); });
+    EDIT_ITEM(int3, MSG_FLOW, &planner.flow_percentage[active_extruder], 10, 999, []{ planner.refresh_e_factor(active_extruder); });
     // Flow En:
     #if HAS_MULTI_EXTRUDER
-      LOOP_L_N(n, EXTRUDERS)
-        EDIT_ITEM_N(int3, n, MSG_FLOW_N, &planner.flow_percentage[n], 10, 300, []{ planner.refresh_e_factor(MenuItemBase::itemIndex); });
+      EXTRUDER_LOOP()
+        EDIT_ITEM_N(int3, e, MSG_FLOW_N, &planner.flow_percentage[e], 10, 999, []{ planner.refresh_e_factor(MenuItemBase::itemIndex); });
     #endif
   #endif
 
@@ -210,11 +210,11 @@ void menu_tune() {
   // Advance K:
   //
   #if ENABLED(LIN_ADVANCE) && DISABLED(SLIM_LCD_MENUS)
-    #if EXTRUDERS == 1
+    #if DISTINCT_E < 2
       EDIT_ITEM(float42_52, MSG_ADVANCE_K, &planner.extruder_advance_K[0], 0, 10);
-    #elif HAS_MULTI_EXTRUDER
-      LOOP_L_N(n, EXTRUDERS)
-        EDIT_ITEM_N(float42_52, n, MSG_ADVANCE_K_E, &planner.extruder_advance_K[n], 0, 10);
+    #else
+      EXTRUDER_LOOP()
+        EDIT_ITEM_N(float42_52, e, MSG_ADVANCE_K_E, &planner.extruder_advance_K[e], 0, 10);
     #endif
   #endif
 
@@ -225,149 +225,17 @@ void menu_tune() {
   //
   #if ENABLED(BABYSTEPPING)
     #if ENABLED(BABYSTEP_XY)
-      SUBMENU(MSG_BABYSTEP_X, []{ _lcd_babystep_go(_lcd_babystep_x); });
-      SUBMENU(MSG_BABYSTEP_Y, []{ _lcd_babystep_go(_lcd_babystep_y); });
+      SUBMENU_N(X_AXIS, MSG_BABYSTEP_N, []{ _lcd_babystep_go(_lcd_babystep_x); });
+      SUBMENU_N(Y_AXIS, MSG_BABYSTEP_N, []{ _lcd_babystep_go(_lcd_babystep_y); });
     #endif
     #if ENABLED(BABYSTEP_ZPROBE_OFFSET)
       SUBMENU(MSG_ZPROBE_ZOFFSET, lcd_babystep_zoffset);
-   //    EDIT_ITEM(float42_52, MSG_ZPROBE_ZOFFSET, &probe.offset.z, -5.00, 5.00, []{ lcd_babystep_zoffset(); });
     #else
-      SUBMENU(MSG_BABYSTEP_Z, lcd_babystep_z);
+      SUBMENU_N(Z_AXIS, MSG_BABYSTEP_N, lcd_babystep_z);
     #endif
   #endif
 
   END_MENU();
 }
-void Lcd_set_feedrate()
-{
-   static int16_t  fresh_data;
-   static char fresh_flag;
-   
-    if (ui.use_click())   {
-        ui.AC_bar_control=false;
-        ui.enable_encoder_multiplier(false);
-        feedrate_percentage=fresh_data;
-        fresh_flag=0;
-    return  ui.goto_previous_screen_no_defer();
-  }
-      ui.defer_status_screen();
-       if(fresh_flag==0)
-       {
-         ui.AC_bar_control=true;
-         ui.enable_encoder_multiplier(true);
-         fresh_flag=1;
-         fresh_data= feedrate_percentage;
 
-       }
-
-    if (ui.encoderPosition) {
-      fresh_data +=ui.encoderPosition;
-       ui.encoderPosition = 0;
-       LIMIT(fresh_data, 10, 300);
-       feedrate_percentage=fresh_data;   //打印速度不同于温度，他可以直接生效，如果注释这一行就不生效，注释掉就是最后确定才生效
-       ui.refresh(LCDVIEW_CALL_REDRAW_NEXT); 
-    }
-
-    if (ui.should_draw()) {
- 
- 
-         MenuEditItemBase::draw_edit_screen(GET_TEXT(MSG_SPEED), pct16tostrpctrj(fresh_data));
-        #define SLIDER_LENGTH 224
-        #define SLIDER_Y_POSITION 140
-
-        tft.canvas((TFT_WIDTH - SLIDER_LENGTH) / 2, SLIDER_Y_POSITION, SLIDER_LENGTH, 9);
-        tft.set_background(COLOR_PROGRESS_BG);
-        tft.add_rectangle(0, 0, SLIDER_LENGTH, 9, COLOR_PROGRESS_FRAME);
-        tft.add_bar(1, 1, ((SLIDER_LENGTH-2) * fresh_data) /300, 7, COLOR_GREEN);
-    } 
-}
-
-void Lcd_set_flow()
-{
-   static int16_t  fresh_data;
-   static char fresh_flag;
-   
-    if (ui.use_click())   {
-        ui.AC_bar_control=false;
-        ui.enable_encoder_multiplier(false);
-        planner.flow_percentage[active_extruder]=fresh_data;
-        planner.refresh_e_factor(active_extruder);   //挤出速率确定
-        fresh_flag=0;
-    return  ui.goto_previous_screen_no_defer();
-  }
-      ui.defer_status_screen();
-       if(fresh_flag==0)
-       {
-         ui.AC_bar_control=true;
-         ui.enable_encoder_multiplier(true);
-         fresh_flag=1;
-         fresh_data=planner.flow_percentage[active_extruder];
-
-       }
-
-    if (ui.encoderPosition) {
-      fresh_data +=ui.encoderPosition;
-       ui.encoderPosition = 0;
-       LIMIT(fresh_data, 10, 300);
-       ui.refresh(LCDVIEW_CALL_REDRAW_NEXT); 
-    }
-
-    if (ui.should_draw()) {
- 
-         MenuEditItemBase::draw_edit_screen(GET_TEXT(MSG_FLOW), pct16tostrpctrj(fresh_data));
-        #define SLIDER_LENGTH 224
-        #define SLIDER_Y_POSITION 140
-
-        tft.canvas((TFT_WIDTH - SLIDER_LENGTH) / 2, SLIDER_Y_POSITION, SLIDER_LENGTH, 9);
-        tft.set_background(COLOR_PROGRESS_BG);
-        tft.add_rectangle(0, 0, SLIDER_LENGTH, 9, COLOR_PROGRESS_FRAME);
-        tft.add_bar(1, 1, ((SLIDER_LENGTH-2) * fresh_data) /300, 7, COLOR_GREEN);
-    } 
-}
-void Lcd_set_Fan0()
-{
-   static int16_t  fresh_percent;
-   static char fresh_flag;
-   static uint16_t feed_per;
-    if (ui.use_click())   {
-        ui.AC_bar_control=false;
-        ui.enable_encoder_multiplier(false);
-        thermalManager.set_fan_speed(0,fresh_percent*255/100);
-        fresh_flag=0;
-    return  ui.goto_previous_screen_no_defer();
-  }
-      ui.defer_status_screen();
-       if(fresh_flag==0)
-       {
-       	 fresh_percent = thermalManager.fanPercent(thermalManager.fan_speed[0]);		  
-         ui.AC_bar_control=true;
-         ui.enable_encoder_multiplier(true);
-         fresh_flag=1;
-
-
-       }
-
-    if (ui.encoderPosition) {
-      fresh_percent +=ui.encoderPosition;
-       ui.encoderPosition = 0;
-       LIMIT(fresh_percent, 0, 100);
-       thermalManager.fan_speed[0]=(255*fresh_percent/100);
-       ui.refresh(LCDVIEW_CALL_REDRAW_NEXT); 
-    }
-
-    if (ui.should_draw()) {
- 
- 
-         MenuEditItemBase::draw_edit_screen(GET_TEXT(MSG_FAN_SPEED), pcttostrpctrj(fresh_percent));
-        #define SLIDER_LENGTH 224
-        #define SLIDER_Y_POSITION 140
-
-        tft.canvas((TFT_WIDTH - SLIDER_LENGTH) / 2, SLIDER_Y_POSITION, SLIDER_LENGTH, 9);
-        tft.set_background(COLOR_PROGRESS_BG);
-        tft.add_rectangle(0, 0, SLIDER_LENGTH, 9, COLOR_PROGRESS_FRAME);
-        tft.add_bar(1, 1, fresh_percent*(SLIDER_LENGTH-2)/100, 7, COLOR_GREEN);
-    } 
-}
-
-
-#endif // HAS_LCD_MENU
+#endif // HAS_MARLINUI_MENU

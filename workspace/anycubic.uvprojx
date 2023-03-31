@@ -945,14 +945,14 @@
           <GroupName>src_feature</GroupName>
           <Files>
             <File>
-              <FileName>abl.cpp</FileName>
+              <FileName>bbl.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\feature\bedlevel\abl\abl.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\feature\bedlevel\abl\bbl.cpp</FilePath>
             </File>
             <File>
-              <FileName>abl.h</FileName>
+              <FileName>bbl.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\feature\bedlevel\abl\abl.h</FilePath>
+              <FilePath>..\source\Marlin\src\feature\bedlevel\abl\bbl.h</FilePath>
             </File>
             <File>
               <FileName>bedlevel.cpp</FileName>
@@ -1145,9 +1145,9 @@
               <FilePath>..\source\Marlin\src\gcode\calibrate\G34_M422.cpp</FilePath>
             </File>
             <File>
-              <FileName>G76_M192_M871.cpp</FileName>
+              <FileName>G76_M871.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\gcode\calibrate\G76_M192_M871.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\gcode\calibrate\G76_M871.cpp</FilePath>
             </File>
             <File>
               <FileName>G425.cpp</FileName>
@@ -1802,7 +1802,7 @@
             <File>
               <FileName>M355.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\gcode\caselight\M355.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\gcode\feature\caselight\M355.cpp</FilePath>
             </File>
             <File>
               <FileName>M900.cpp</FileName>
@@ -1843,11 +1843,6 @@
               <FileName>HAL_SPI.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\source\Marlin\src\HAL\shared\HAL_SPI.h</FilePath>
-            </File>
-            <File>
-              <FileName>HAL_spi_L6470.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\HAL\shared\HAL_spi_L6470.cpp</FilePath>
             </File>
             <File>
               <FileName>HAL_ST7920.h</FileName>
@@ -1913,16 +1908,6 @@
               <FileName>timers.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\source\Marlin\src\HAL\STM32\timers.h</FilePath>
-            </File>
-            <File>
-              <FileName>watchdog.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\HAL\STM32\watchdog.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>watchdog.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\HAL\STM32\watchdog.h</FilePath>
             </File>
             <File>
               <FileName>Conditionals_adv.h</FileName>
@@ -2017,37 +2002,37 @@
             <File>
               <FileName>chiron_tft.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\chiron_tft.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\chiron_tft.cpp</FilePath>
             </File>
             <File>
               <FileName>chiron_tft.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\chiron_tft.h</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\chiron_tft.h</FilePath>
             </File>
             <File>
               <FileName>chiron_tft_defs.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\chiron_tft_defs.h</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\chiron_tft_defs.h</FilePath>
             </File>
             <File>
               <FileName>FileNavigator.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\FileNavigator.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\FileNavigator.cpp</FilePath>
             </File>
             <File>
               <FileName>FileNavigator.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\FileNavigator.h</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\FileNavigator.h</FilePath>
             </File>
             <File>
               <FileName>Tunes.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\Tunes.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\Tunes.cpp</FilePath>
             </File>
             <File>
               <FileName>Tunes.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_chiron\Tunes.h</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\Tunes.h</FilePath>
             </File>
             <File>
               <FileName>dgus_FileNavigator.cpp</FileName>
@@ -2085,9 +2070,9 @@
               <FilePath>..\source\Marlin\src\lcd\extui\lib\anycubic_dgus\dgus_Tunes.h</FilePath>
             </File>
             <File>
-              <FileName>anycubic_chiron_lcd.cpp</FileName>
+              <FileName>chiron_extui.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron_lcd.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\extui\anycubic_chiron\chiron_extui.cpp</FilePath>
             </File>
             <File>
               <FileName>anycubic_dgus_lcd.cpp</FileName>
@@ -2408,7 +2393,7 @@
             <File>
               <FileName>speed_lookuptable.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\source\Marlin\src\module\speed_lookuptable.h</FilePath>
+              <FilePath>..\source\Marlin\src\module\stepper\speed_lookuptable.h</FilePath>
             </File>
             <File>
               <FileName>stepper.cpp</FileName>
@@ -2453,7 +2438,7 @@
             <File>
               <FileName>encoder.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>..\source\Marlin\src\module\encoder.cpp</FilePath>
+              <FilePath>..\source\Marlin\src\lcd\e3v2\common\encoder.cpp</FilePath>
             </File>
           </Files>
         </Group>
