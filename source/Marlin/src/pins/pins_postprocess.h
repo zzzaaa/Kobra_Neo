@@ -21,6 +21,8 @@
  */
 #pragma once
 
+#include "../core/drivers.h"
+
 //
 // File: pins/pins_postprocess.h
 // Post-process pins according to configured settings
