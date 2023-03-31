@@ -21,6 +21,7 @@
  */
 #pragma once
 
+#include "../core/boards.h"
 #include "../../Configuration.h"
 
 /**
